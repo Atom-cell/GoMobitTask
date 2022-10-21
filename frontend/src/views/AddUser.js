@@ -16,7 +16,6 @@ const AddUser = () => {
   const [error, setError] = React.useState({
     email: false,
     age: false,
-    fields: false,
   });
   const [cell, setCell] = React.useState("");
   const [age, setAge] = React.useState(null);
@@ -24,38 +23,30 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let err = { ...error };
-    err.fields = false;
-    setError(err);
-    if (name && email && cell && age) {
-      if (!error.age && !error.email && !err.fields) {
-        axios
-          .post("http://localhost:5000/user/add", {
-            name: name,
-            email: email,
-            cell: cell,
-            age: age,
-          })
-          .then((response) => {
-            setResp(response.data.msg);
 
-            console.log("db msg ", response.data.msg);
-            if (response.data.msg === 1) {
-              setTimeout(() => {
-                navigate("/view");
-              }, 1000);
-            }
-          });
-        setName("");
-        setEmail("");
-        setAge(0);
-        setCell("");
-        setResp(9);
-      }
-    } else {
-      let err = { ...error };
-      err.fields = true;
-      setError(err);
+    if (!error.age && !error.email) {
+      axios
+        .post("http://localhost:5000/user/add", {
+          name: name,
+          email: email,
+          cell: cell,
+          age: age,
+        })
+        .then((response) => {
+          setResp(response.data.msg);
+
+          console.log("db msg ", response.data.msg);
+          if (response.data.msg === 1) {
+            setTimeout(() => {
+              navigate("/view");
+            }, 1000);
+          }
+        });
+      setName("");
+      setEmail("");
+      setAge(0);
+      setCell("");
+      setResp(9);
     }
   };
 
@@ -105,6 +96,7 @@ const AddUser = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             style={{ width: "70%" }}
+            required
           />
         </FormGroup>
         <FormGroup>
@@ -125,6 +117,7 @@ const AddUser = () => {
             value={cell}
             onChange={(e) => setCell(e.target.value)}
             style={{ width: "70%" }}
+            required
           />
         </FormGroup>
         <FormGroup>
