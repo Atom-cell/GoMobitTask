@@ -16,6 +16,7 @@ const AddUser = () => {
   const [error, setError] = React.useState({
     email: false,
     age: false,
+    fields: false,
   });
   const [cell, setCell] = React.useState("");
   const [age, setAge] = React.useState(null);
@@ -23,31 +24,38 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!error.age && !error.email && !error.fields) {
-      axios
-        .post("http://localhost:5000/user/add", {
-          name: name,
-          email: email,
-          cell: cell,
-          age: age,
-        })
-        .then((response) => {
-          let r = response.data.msg;
-          setResp(r);
-          console.log("msg: ", resp);
-          console.log("msg: ", resp);
-          console.log("msg: ", resp);
-          console.log("msg: ", resp);
-          if (response.data.msg === 1) {
-            setTimeout(() => {
-              navigate("/view");
-            }, 1000);
-          }
-        });
-      setName("");
-      setEmail("");
-      setAge(0);
-      setCell("");
+    let err = { ...error };
+    err.fields = false;
+    setError(err);
+    if (name && email && cell && age) {
+      if (!error.age && !error.email && !err.fields) {
+        axios
+          .post("http://localhost:5000/user/add", {
+            name: name,
+            email: email,
+            cell: cell,
+            age: age,
+          })
+          .then((response) => {
+            setResp(response.data.msg);
+
+            console.log("db msg ", response.data.msg);
+            if (response.data.msg === 1) {
+              setTimeout(() => {
+                navigate("/view");
+              }, 1000);
+            }
+          });
+        setName("");
+        setEmail("");
+        setAge(0);
+        setCell("");
+        setResp(9);
+      }
+    } else {
+      let err = { ...error };
+      err.fields = true;
+      setError(err);
     }
   };
 
@@ -89,7 +97,7 @@ const AddUser = () => {
           User added successfully!
         </UncontrolledAlert>
       ) : null}
-      <Form action="" noValidate autoComplete="off" onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label>Name</Label>
           <Input
